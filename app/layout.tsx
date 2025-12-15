@@ -10,7 +10,9 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Live Polling System - Intervue Poll",
   description: "Real-time polling system for teachers and students",
-  
+  icons: {
+    icon: "/icon.svg",
+  },
 }
 
 export default function RootLayout({
