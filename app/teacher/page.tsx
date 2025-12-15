@@ -49,6 +49,7 @@ export default function TeacherPage() {
   const [showHistory, setShowHistory] = useState(false)
   const [showParticipants, setShowParticipants] = useState(false)
   const [showChat, setShowChat] = useState(false)
+  const [activeChatTab, setActiveChatTab] = useState<"chat" | "participants">("chat")
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatInput, setChatInput] = useState("")
   const [sessionId, setSessionId] = useState<string>("")
@@ -516,28 +517,72 @@ export default function TeacherPage() {
         <div className="fixed bottom-24 right-6 w-80 bg-white rounded-lg shadow-2xl border-2 border-[#5767D0] z-40">
           <div className="bg-[#5767D0] text-white p-4 rounded-t-lg flex justify-between items-center">
             <div className="flex gap-3 border-b border-white/20">
-              <button className="pb-2 border-b-2 border-white font-semibold">Chat</button>
-              <button className="pb-2 text-white/70">Participants</button>
+              <button
+                onClick={() => setActiveChatTab("chat")}
+                className={`pb-2 font-semibold ${
+                  activeChatTab === "chat" ? "border-b-2 border-white" : "text-white/70"
+                }`}
+              >
+                Chat
+              </button>
+              <button
+                onClick={() => setActiveChatTab("participants")}
+                className={`pb-2 font-semibold ${
+                  activeChatTab === "participants" ? "border-b-2 border-white" : "text-white/70"
+                }`}
+              >
+                Participants
+              </button>
             </div>
             <button onClick={() => setShowChat(false)} className="text-white text-xl hover:text-white/80">
               ✕
             </button>
           </div>
-          <div className="h-72 overflow-y-auto p-4 space-y-3 bg-white">
-            {chatMessages.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">No messages yet</p>
+          <div className="h-72 overflow-y-auto p-4 bg-white">
+            {activeChatTab === "chat" ? (
+              <div className="space-y-3">
+                {chatMessages.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-8">No messages yet</p>
+                ) : (
+                  chatMessages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`p-3 rounded-lg ${
+                        msg.userName === "Teacher"
+                          ? "bg-[#7765DA] text-white ml-12"
+                          : "bg-gray-100 text-foreground mr-12"
+                      } max-w-[85%]`}
+                    >
+                      <div className="text-xs font-semibold mb-1 opacity-80">
+                        {msg.userName === "Teacher" ? "User 2" : msg.userName}
+                      </div>
+                      <div className="text-sm">{msg.message}</div>
+                    </div>
+                  ))
+                )}
+              </div>
             ) : (
-              chatMessages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`p-3 rounded-lg ${msg.userName === "Teacher" ? "bg-[#7765DA] text-white ml-12" : "bg-gray-100 text-foreground mr-12"} max-w-[85%]`}
-                >
-                  <div className="text-xs font-semibold mb-1 opacity-80">
-                    {msg.userName === "Teacher" ? "User 2" : msg.userName}
-                  </div>
-                  <div className="text-sm">{msg.message}</div>
-                </div>
-              ))
+              <div className="space-y-3">
+                <div className="text-sm text-muted-foreground mb-2">Name</div>
+                {participants.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-8">No participants yet</p>
+                ) : (
+                  participants.map((participant) => (
+                    <div
+                      key={participant.id}
+                      className="flex justify-between items-center p-2 rounded border border-gray-200 hover:bg-gray-50 text-sm"
+                    >
+                      <span className="font-medium text-foreground truncate mr-2">{participant.name}</span>
+                      <button
+                        onClick={() => kickStudent(participant.id)}
+                        className="text-[#5767D0] hover:underline"
+                      >
+                        Kick out
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             )}
           </div>
           <div className="p-3 border-t flex gap-2 bg-white rounded-b-lg">
